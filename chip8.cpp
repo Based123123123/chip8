@@ -241,13 +241,21 @@ void Chip8::decode(ui16 instr){
 		case 0xd:{
 			// DXYN Display
 			ui8 x = V((instr&0xf00)>>8)%displayWidth, y = V((instr&0xf0)>>4)%displayHeight, n = instr&0xf;
+			//if((x!=V((instr&0xf00)>>8))||(y!=V((instr&0xf0)>>4))){
+			//	printf("x: %d, wrapped x: %d, y: %d, wrapped y: %d\n",V((instr&0xf00)>>8),x,V((instr&0xf0)>>4),y);
+			//}
 			if(!draw){
 				V(0xF)=0;
 				for(ui8 i=0;i<n;i++){
+					//if(!ram[I+i])
+					//	continue;
 					for(ui8 tX=0;tX<8;tX++){
 						if(x+tX<displayWidth){
 							bool pixel=(ram[I+i]>>(7-tX))%2;
-							if(displayData[y*displayWidth+x+tX]^pixel)
+							if(!pixel)
+								continue;
+							if(displayData[y*displayWidth+x+tX])
+							//if(displayData[y*displayWidth+x+tX]^pixel)
 								V(0xF)=1;
 							displayData[y*displayWidth+x+tX]^=pixel;
 						}
